@@ -23,11 +23,14 @@ load_dotenv()
 
 # Define the API key in the code
 API_KEY = os.getenv("API_KEY")
-MONGO_URI = os.getenv("MONGO_URI")
+MONGO_URI = os.getenv('MONGO_URI')
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
-
+GOOGLE_SCOPES = os.getenv('GOOGLE_SCOPE')
+CLIENT_SECRET_FILE = os.getenv('CLIENT_SECRET_FILE')
+TOKEN_FILE = os.getenv('TOKEN_FILE')
+CALENDAR_URL = os.getenv("CALENDAR_URL")
 
 # Initialize MongoDB client
 mongo_client = MongoClient(MONGO_URI)
@@ -35,9 +38,9 @@ db = mongo_client["call_data"]
 collection = db["call_summaries"]
 collectionSecond = db["userMettingDetails"]
 user_details_collection = db["user_details"]  # New collection for user details and meeting link
-calendar_credentials_file = 'client_secret_218304253361-68om5ebmp4mg4v3o07dbdsharldf6001.apps.googleusercontent.com.json'  # Update with client's credentials file
-calendar_scopes = ['https://www.googleapis.com/auth/calendar']
-token_file = 'client_token.pickle'  # Ensure this token file is used for client's credentials
+calendar_credentials_file = CLIENT_SECRET_FILE  # Update with client's credentials file
+calendar_scopes = [GOOGLE_SCOPES]
+token_file = TOKEN_FILE  # Ensure this token file is used for client's credentials
 
 # Main Streamlit app
 def main():
@@ -447,7 +450,7 @@ def send_email_with_sendgrid(name, email, meeting_link):
 # Function to show embedded Google Calendar
 def show_meetings():
     st.subheader("Scheduled Meetings")
-    calendar_url = "https://calendar.google.com/calendar/embed?src=digital.marketing.connection24%40gmail.com&ctz=Asia%2FKolkata"
+    calendar_url = CALENDAR_URL;
     components.iframe(calendar_url, width=800, height=600, scrolling=True)
 
 # Function to show name, transcript, and summary
