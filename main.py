@@ -26,7 +26,8 @@ API_KEY = os.getenv("API_KEY")
 MONGO_URI = os.getenv('MONGO_URI')
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
-client = openai.OpenAI(api_key=OPENAI_API_KEY)
+# Initialize OpenAI API key
+openai.api_key = OPENAI_API_KEY
 GOOGLE_SCOPES = os.getenv('GOOGLE_SCOPE')
 CLIENT_SECRET_FILE = os.getenv('CLIENT_SECRET_FILE')
 TOKEN_FILE = os.getenv('TOKEN_FILE')
