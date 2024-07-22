@@ -336,7 +336,7 @@ def get_calendar_service():
                 flow = InstalledAppFlow.from_client_secrets_file(
                     calendar_credentials_file, calendar_scopes
                 )
-                flow.redirect_uri = "http://localhost:8501/"
+                flow.redirect_uri = "https://ai-sales-7g8n.onrender.com"
                 creds = flow.run_local_server(port=0)
                 with open(token_file, 'wb') as token:
                     pickle.dump(creds, token)
