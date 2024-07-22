@@ -21,7 +21,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 load_dotenv()
 
-# Define the API key
+# Define the API key in the code
 API_KEY = os.getenv("API_KEY")
 MONGO_URI = os.getenv("MONGO_URI")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
