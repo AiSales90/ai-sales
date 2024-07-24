@@ -191,6 +191,7 @@ def make_single_call_api(phone_number, task, transfer_phone_number):
     data = {
         "phone_number": phone_number,
         "task": task,
+        "language": "de",
         "voice": "e1289219-0ea2-4f22-a994-c542c2a48a0f",
         "transfer_phone_number": transfer_phone_number
     }
@@ -210,7 +211,7 @@ def make_bulk_call_api(uploaded_file, task, transfer_phone_number):
                 name = row["name"]
                 phone_number = row["phone_number"]
                 task_prompt = task.format(name=name)
-                data = {"phone_number": phone_number, "task": task_prompt, "transfer_phone_number": transfer_phone_number}
+                data = {"phone_number": phone_number, "task": task_prompt,  "language": "de", "transfer_phone_number": transfer_phone_number}
                 response = requests.post("https://api.bland.ai/v1/calls", data=data, headers=headers)
                 logging.debug(f"Bulk Call Response for {phone_number}: {response.json()}")
                 st.write(response.json())
