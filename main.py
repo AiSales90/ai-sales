@@ -11,7 +11,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from pymongo import MongoClient
-import openai
+from openai import OpenAI
 import streamlit.components.v1 as components
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -27,12 +27,11 @@ MONGO_URI = os.getenv('MONGO_URI')
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
 # Initialize OpenAI API key
-openai.api_key = OPENAI_API_KEY
-GOOGLE_SCOPES = os.getenv('GOOGLE_SCOPE')
+GOOGLE_SCOPES = "https://www.googleapis.com/auth/calendar"
 CLIENT_SECRET_FILE = os.getenv('CLIENT_SECRET_FILE')
 TOKEN_FILE = os.getenv('TOKEN_FILE')
 CALENDAR_URL = os.getenv("CALENDAR_URL")
-
+client = OpenAI(api_key=OPENAI_API_KEY)
 # Initialize MongoDB client
 mongo_client = MongoClient(MONGO_URI)
 db = mongo_client["call_data"]
@@ -191,7 +190,8 @@ def make_single_call_api(phone_number, task, transfer_phone_number):
     data = {
         "phone_number": phone_number,
         "task": task,
-        "language": "de",
+        # "language": "de",
+        "language": "en",
         "voice": "e1289219-0ea2-4f22-a994-c542c2a48a0f",
         "transfer_phone_number": transfer_phone_number
     }
@@ -211,7 +211,7 @@ def make_bulk_call_api(uploaded_file, task, transfer_phone_number):
                 name = row["name"]
                 phone_number = row["phone_number"]
                 task_prompt = task.format(name=name)
-                data = {"phone_number": phone_number, "task": task_prompt,  "language": "de", "transfer_phone_number": transfer_phone_number}
+                data = {"phone_number": phone_number, "task": task_prompt,  "language": "en", "transfer_phone_number": transfer_phone_number}
                 response = requests.post("https://api.bland.ai/v1/calls", data=data, headers=headers)
                 logging.debug(f"Bulk Call Response for {phone_number}: {response.json()}")
                 st.write(response.json())
@@ -258,6 +258,7 @@ def extract_user_details(summary):
         )
         details = response.choices[0].message.content
         logging.debug(f"OpenAI extract_user_details response: {response}")
+        logging.debug(f"Extracted details from OpenAI: {details}")
         
         # Parse the response into a dictionary
         details_dict = {}
@@ -380,7 +381,9 @@ def create_event(name, date, time, email):
         service = get_calendar_service()
         event = service.events().insert(calendarId='primary', body=event).execute()
         logging.debug(f"Event created: {event}")
-        return event.get('htmlLink')
+        meeting_link = event.get('htmlLink')
+        logging.debug(f"Generated meeting link: {meeting_link}")
+        return meeting_link
     except ValueError as e:
         logging.error(f"An error occurred with date/time formatting: {e}")
         st.error("Invalid date or time format.")
@@ -409,6 +412,7 @@ def schedule_google_calendar(user_details):
                 date = '2024' + date[4:]
 
             meeting_link = create_event(name, date, time, email)
+            logging.debug(f"Meeting link generated: {meeting_link}")
             if meeting_link:
                 logging.debug(f"Meeting scheduled successfully: {meeting_link}")
                 st.success("Meeting scheduled successfully!")
